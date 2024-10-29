@@ -29,6 +29,7 @@ module.exports = {
       CFBundleVersion: packageJson.bundle_version,
     },
     bundleIdentifier: appId,
+    googleServicesFile: `./env/firebase/ios/GoogleService-Info-${config.EXPO_PUBLIC_ENV}.plist`,
   },
   android: {
     adaptiveIcon: {
@@ -37,6 +38,7 @@ module.exports = {
     },
     package: appId,
     versionCode: packageJson.version_code,
+    googleServicesFile: `./env/firebase/android/google-services-${config.EXPO_PUBLIC_ENV}.json`,
   },
   web: {
     bundler: 'metro',

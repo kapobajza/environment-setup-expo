@@ -26,8 +26,13 @@ web-build/
 src/config/env.js
 src/config/env.ts
 
-ios
-android
+/ios
+/android
+
+env/firebase/android/*
+env/firebase/ios/*
+!env/firebase/android/.gitkeep
+!env/firebase/ios/.gitkeep
 
 fastlane/environment.rb
 fastlane/firebase_service_acc.json
