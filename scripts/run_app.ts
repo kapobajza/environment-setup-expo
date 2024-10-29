@@ -1,18 +1,14 @@
-import { z } from 'zod';
-import { getAppEnvArg, getProcessArgs, setAppEnv, spawnAsync } from './util';
+import { getAppEnvArg, getPlatformArg, getProcessArgs, setAppEnv, spawnAsync } from './util';
 import chalk from 'chalk';
 
 const appEnv = getAppEnvArg();
+const platform = getPlatformArg();
 
 const args = getProcessArgs()
   .options({
     clean: {
       type: 'boolean',
       default: false,
-    },
-    platform: {
-      type: 'string',
-      default: 'ios',
     },
     release: {
       type: 'boolean',
@@ -21,17 +17,7 @@ const args = getProcessArgs()
   })
   .parse();
 
-const platformSchema = z.union([z.literal('ios'), z.literal('android')]);
-
 async function main() {
-  const res = platformSchema.safeParse(args.platform);
-
-  if (res.error) {
-    throw res.error;
-  }
-
-  const platform = res.data;
-
   setAppEnv(appEnv);
   const additionalPrebuildArgs: string[] = [];
   const additionalRunArgs: string[] = [];

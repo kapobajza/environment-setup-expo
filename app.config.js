@@ -1,3 +1,4 @@
+const packageJson = require('./package.json');
 /** @type {import('./src/config').ExpoAppEnv} */
 let config = require('./src/config/env');
 
@@ -25,6 +26,7 @@ module.exports = {
     supportsTablet: true,
     infoPlist: {
       CFBundleDisplayName: appName,
+      CFBundleVersion: packageJson.bundle_version,
     },
     bundleIdentifier: appId,
   },
@@ -34,6 +36,7 @@ module.exports = {
       backgroundColor: '#ffffff',
     },
     package: appId,
+    versionCode: packageJson.version_code,
   },
   web: {
     bundler: 'metro',

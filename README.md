@@ -82,3 +82,50 @@ You can also pass the `--release` flag if you want to run your app in release mo
 ```sh
 yarn ios --release --clean
 ```
+
+## Release the app using [Fastlane](https://fastlane.tools/) and [Firebase App Distribution](https://firebase.google.com/docs/app-distribution)
+
+To release the app using Fastlane and Firebase App Distribution first we need to set up some pre-requisites:
+
+- Ruby version 2.7.7 (as specified in the [.ruby-version](.ruby-version) file). You can install it using [rbenv](https://github.com/rbenv/rbenv):
+```sh
+# After installing rbenv, run this in the root of the project
+rbenv install
+```
+- Run `bundle install`
+- [Create](https://firebase.google.com/docs/android/setup?hl=en&authuser=1#create-firebase-project) (or use an already existing) Firebase project
+- [Register your Android and iOS apps with Firebase](https://firebase.google.com/docs/android/setup?hl=en&authuser=1#register-app) - you should register 3 Android and 3 iOS apps (`dev`, `stage` and `prod`). The bundle ids/package names should be: `{bundle_id/package_name}.{env}`. For example: `com.example.dev`, `com.example.stage` and `com.example` (for prod we can leave out the suffix). You can skip the "Download and then add config file" and "Add Firebase SDK" steps simply by clicking "Next". Here's how the registered Android apps look like on my Firebase project:
+
+<img alt="firebase apps" src="./.github/resources/firebase_apps.jpg">
+
+- Create an `environment.rb` file inside of the `fastlane` folder. It should contain the Firebase app id of the apps you registered in the previous step:
+
+```ruby
+ENV['IOS_FIREBASE_DEV_APP_ID'] = 'firebase_ios_dev_app_id'
+ENV['IOS_FIREBASE_STAGE_APP_ID'] = 'firebase_ios_stage_app_id'
+ENV['IOS_FIREBASE_PROD_APP_ID'] = 'firebase_ios_prod_app_id'
+ENV['ANDROID_FIREBASE_DEV_APP_ID'] = 'firebase_android_dev_app_id'
+ENV['ANDROID_FIREBASE_STAGE_APP_ID'] = 'firebase_android_stage_app_id'
+ENV['ANDROID_FIREBASE_PROD_APP_ID'] = 'firebase_android_prod_app_id'
+```
+
+- [Generate a new service account on Firebase](https://firebase.google.com/docs/app-distribution/authenticate-service-account?platform=ios). Select the generated service account go to "Keys" and click "Add key". Use the JSON format. Download the file, rename it to `firebase_service_acc.json` and place it inside of the `fastlane` folder.
+
+
+After completing the above steps, you are ready to run the command to release the app:
+
+```sh
+# Make an Android dev release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane android dev
+# Make an Android stage release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane android stage
+# Make an Android prod release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane android prod
+
+# Make an iOS dev release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane ios dev
+# Make an iOS stage release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane ios stage
+# Make an iOS prod release build and upload it to Firebase
+GOOGLE_APPLICATION_CREDENTIALS=fastlane/firebase_service_acc.json bundle exec fastlane ios prod
+```

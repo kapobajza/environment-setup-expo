@@ -3,6 +3,8 @@
   "main": "expo-router/entry",
   "description": "Custom environment setup using expo, but without EAS CLI",
   "version": "1.0.0",
+  "bundle_version": "1",
+  "version_code": "3",
   "scripts": {
     "start": "expo start",
     "android": "tsx ./scripts/run_app.ts --platform=android",
@@ -10,7 +12,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "update_env": "tsx ./scripts/update_env.ts"
+    "update_env": "tsx ./scripts/update_env.ts",
+    "increment_app_version": "tsx ./scripts/increment_app_version.ts"
   },
   "jest": {
     "preset": "jest-expo"
@@ -40,6 +43,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/jest": "^29.5.12",
+    "@types/proper-lockfile": "^4",
     "@types/react": "~18.2.45",
     "@types/react-test-renderer": "^18.0.7",
     "@types/yargs": "15.0.9",
@@ -47,6 +51,7 @@
     "jest": "^29.2.1",
     "jest-expo": "~51.0.3",
     "prettier": "^3.3.3",
+    "proper-lockfile": "^4.1.2",
     "react-test-renderer": "18.2.0",
     "tsx": "^4.19.2",
     "typescript": "~5.3.3",

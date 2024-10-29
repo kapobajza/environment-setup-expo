@@ -80,6 +80,23 @@ export const getAppEnvArg = () => {
   return args.env;
 };
 
+const platformSchema = z.union([z.literal('ios'), z.literal('android')]);
+
+export const getPlatformArg = () => {
+  const args = getProcessArgs().option('platform', {
+    alias: 'p',
+    type: 'string',
+  }).argv;
+
+  const res = platformSchema.safeParse(args.platform);
+
+  if (res.error) {
+    throw res.error;
+  }
+
+  return res.data;
+};
+
 export const spawnAsync = async (command: string, args: string[], options?: SpawnOptions) => {
   return new Promise<void>((resolve, reject) => {
     spawn(command, args, { ...options, stdio: 'inherit' }).on('close', (code) => {
@@ -91,3 +108,5 @@ export const spawnAsync = async (command: string, args: string[], options?: Spaw
     });
   });
 };
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

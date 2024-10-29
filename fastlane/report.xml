@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: yarn update_env --env dev" time="1.345702">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: yarn increment_app_version --platform android" time="0.761838">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: EXPO_NO_GIT_STATUS=1 yarn expo prebuild --clean" time="32.122174">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: assembleRelease" time="371.388196">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: firebase_app_distribution" time="135.603039">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

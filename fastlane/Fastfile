@@ -1,0 +1,110 @@
+require './environment'
+
+def get_root_dir()
+  return `git rev-parse --show-toplevel`.strip
+end
+
+def distribute_app(env:, platform:)
+  sanitized_platform = platform.downcase
+  root_dir = get_root_dir()
+  
+  Dir.chdir(root_dir) do
+    # Run the command to update our environment
+    sh("yarn update_env --env #{env}")
+    # Run the command to increment the app version (iOS - bundle version or Android - version code)
+    sh("yarn increment_app_version --platform #{sanitized_platform}")
+    # Run the expo prebuild command
+    sh("EXPO_NO_GIT_STATUS=1 yarn expo prebuild --clean")
+  end
+
+  app_id = ""
+
+  case sanitized_platform
+  when "ios"
+    case env
+    when "dev"
+      app_id = ENV["IOS_FIREBASE_DEV_APP_ID"]
+    when "stage"
+      app_id = ENV["IOS_FIREBASE_STAGE_APP_ID"]
+    when "prod"
+      app_id = ENV["IOS_FIREBASE_PROD_APP_ID"]
+    end
+    # To build the iOS app you can use build_app/gym
+    # I am not gonna use anything here since I don't have an Apple Developer acc at the moment
+    # But here's an example:
+    # build_app(
+    #   workspace: "MyApp.xcworkspace",
+    #   configuration: "Release",
+    #   scheme: "MyApp",
+    # )
+
+  when "android"
+    case env
+    when "dev"
+      app_id = ENV["ANDROID_FIREBASE_DEV_APP_ID"]
+    when "stage"
+      app_id = ENV["ANDROID_FIREBASE_STAGE_APP_ID"]
+    when "prod"
+      app_id = ENV["ANDROID_FIREBASE_PROD_APP_ID"]
+    end
+
+    gradle(task: "assembleRelease", project_dir: './android')
+  end
+
+  firebase_release = firebase_app_distribution(
+    app: app_id,
+  )
+
+  version = "#{firebase_release["displayVersion".to_sym]} (#{firebase_release["buildVersion".to_sym]})"
+  firesbase_download_url = firebase_release["firebaseConsoleUri".to_sym]
+
+  UI.message("A new #{platform} (#{env}) app version #{version} has been released. Download it from #{firesbase_download_url}")
+end
+
+platform :ios do
+  desc "Release for iOS Dev"
+  lane :dev do |options|
+    env = "dev"
+    platform = "iOS"
+
+    distribute_app(env: env, platform: platform)
+  end
+  desc "Release for iOS Stage"
+  lane :staging do |options|
+    env = "staging"
+    platform = "iOS"
+
+    distribute_app(env: env, platform: platform)
+  end
+  desc "Release for iOS prod"
+  lane :prod do |options|
+    env = "prod"
+    platform = "iOS"
+
+    distribute_app(env: env, platform: platform)
+  end
+end
+
+platform :android do
+  desc "Release for Android Dev"
+  lane :dev do |options|
+    env = "dev"
+    platform = "Android"
+
+    distribute_app(env: env, platform: platform)
+  end
+  desc "Release for Android Stage"
+  lane :staging do |options|
+    env = "staging"
+    platform = "Android"
+
+    distribute_app(env: env, platform: platform)
+  end
+  desc "Release for Android prod"
+  lane :prod do |options|
+    env = "prod"
+    platform = "Android"
+
+    distribute_app(env: env, platform: platform)
+  end
+end
