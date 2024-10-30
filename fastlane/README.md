@@ -23,10 +23,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Release for iOS Dev
 
-### ios staging
+### ios stage
 
 ```sh
-[bundle exec] fastlane ios staging
+[bundle exec] fastlane ios stage
 ```
 
 Release for iOS Stage
@@ -52,10 +52,10 @@ Release for iOS prod
 
 Release for Android Dev
 
-### android staging
+### android stage
 
 ```sh
-[bundle exec] fastlane android staging
+[bundle exec] fastlane android stage
 ```
 
 Release for Android Stage

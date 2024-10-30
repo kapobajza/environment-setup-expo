@@ -4,9 +4,12 @@ def get_root_dir()
   return `git rev-parse --show-toplevel`.strip
 end
 
+# @param [String] env
+# @param [String] platform
 def distribute_app(env:, platform:)
   sanitized_platform = platform.downcase
   root_dir = get_root_dir()
+  firebase_app_id = ENV["#{platform.upcase}_FIREBASE_#{env.upcase}_APP_ID"]
   
   Dir.chdir(root_dir) do
     # Run the command to update our environment
@@ -17,18 +20,8 @@ def distribute_app(env:, platform:)
     sh("EXPO_NO_GIT_STATUS=1 yarn expo prebuild --clean")
   end
 
-  app_id = ""
-
   case sanitized_platform
   when "ios"
-    case env
-    when "dev"
-      app_id = ENV["IOS_FIREBASE_DEV_APP_ID"]
-    when "stage"
-      app_id = ENV["IOS_FIREBASE_STAGE_APP_ID"]
-    when "prod"
-      app_id = ENV["IOS_FIREBASE_PROD_APP_ID"]
-    end
     # To build the iOS app you can use build_app/gym
     # I am not gonna use anything here since I don't have an Apple Developer acc at the moment
     # But here's an example:
@@ -39,20 +32,11 @@ def distribute_app(env:, platform:)
     # )
 
   when "android"
-    case env
-    when "dev"
-      app_id = ENV["ANDROID_FIREBASE_DEV_APP_ID"]
-    when "stage"
-      app_id = ENV["ANDROID_FIREBASE_STAGE_APP_ID"]
-    when "prod"
-      app_id = ENV["ANDROID_FIREBASE_PROD_APP_ID"]
-    end
-
     gradle(task: "assembleRelease", project_dir: './android')
   end
 
   firebase_release = firebase_app_distribution(
-    app: app_id,
+    app: firebase_app_id,
   )
 
   version = "#{firebase_release["displayVersion".to_sym]} (#{firebase_release["buildVersion".to_sym]})"
@@ -70,8 +54,8 @@ platform :ios do
     distribute_app(env: env, platform: platform)
   end
   desc "Release for iOS Stage"
-  lane :staging do |options|
-    env = "staging"
+  lane :stage do |options|
+    env = "stage"
     platform = "iOS"
 
     distribute_app(env: env, platform: platform)
@@ -94,8 +78,8 @@ platform :android do
     distribute_app(env: env, platform: platform)
   end
   desc "Release for Android Stage"
-  lane :staging do |options|
-    env = "staging"
+  lane :stage do |options|
+    env = "stage"
     platform = "Android"
 
     distribute_app(env: env, platform: platform)
