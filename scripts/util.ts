@@ -26,8 +26,12 @@ export const prettierFormatted = async (text: string, src: string) => {
 export const setAppEnv = async (env: string) => {
   const rootPath = getRootPath();
   const srcEnvPath = path.resolve(rootPath, 'env', `.env.${env}`);
-  const dotEnvContent = await fs.readFile(srcEnvPath, 'utf8');
+  let dotEnvContent = await fs.readFile(srcEnvPath, 'utf8');
   const destEnvPath = path.resolve(rootPath, '.env');
+
+  if (dotEnvContent.indexOf('EXPO_PUBLIC_ENV') === -1) {
+    dotEnvContent = `EXPO_PUBLIC_ENV="${env}"\n${dotEnvContent}`;
+  }
 
   const envJSContent = dotEnvContent
     .split('\n')
